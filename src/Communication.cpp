@@ -1,12 +1,13 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include "Communication.h"
+#include "Functions.h"  // Remove after testing
 
 
-void sendToRaspberry(int arg1, int arg2, bool arg3) {
-  doc["Temp"] = arg1;
-  doc["Pressure"] = arg2;
-  doc["Leak"] = arg3;
+void sendToRaspberry(float arg1, int arg2, bool arg3) {
+  outDoc["Temp"] = arg1;
+  outDoc["Pressure"] = arg2;
+  outDoc["Leak"] = arg3;
   
   if (isnan(arg1) || isnan(arg2) || isnan(arg3)) {
     Serial.println(F("Failed to read from sensor!"));
@@ -14,8 +15,23 @@ void sendToRaspberry(int arg1, int arg2, bool arg3) {
   }
 
   // Format the data to serial
-  serializeJson(doc, Serial);
+  serializeJson(outDoc, Serial);
 
   // Sending to Raspberry Pi
   Serial.println();
+}
+
+void receiveFromRaspberry() {
+
+  String  payload;
+  payload = Serial.readStringUntil( '\n' );
+  StaticJsonDocument<512> doc;
+  deserializeJson(doc, payload);
+  if (doc["operation"] == "sequence") {
+    setMotorSpeeds(0);
+      
+  }
+  else {
+    //setMotorSpeeds(0);
+  }
 }

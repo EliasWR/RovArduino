@@ -4,14 +4,15 @@
 void setMotorSpeeds (int zone) {
   switch (zone) {
   case 0: // Current with lights 12V: 680mA
+    Serial.println("Zone 0 entered");
     motor_1.writeMicroseconds(1600);    
     motor_2.writeMicroseconds(1600);
     motor_3.writeMicroseconds(1600);
     break;
   case 1: // Current with lights 12V: 
-    motor_1.writeMicroseconds(1700);
-    motor_2.writeMicroseconds(1700);
-    motor_3.writeMicroseconds(1700);
+    motor_1.writeMicroseconds(1500);
+    motor_2.writeMicroseconds(1500);
+    motor_3.writeMicroseconds(1500);
     break;
   case 2:
     motor_1.writeMicroseconds(1800);
