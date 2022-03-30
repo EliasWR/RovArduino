@@ -1,7 +1,7 @@
 #define Communication.h
 #include "ArduinoJson.h"
 
-extern StaticJsonDocument<512> inDoc;
+extern StaticJsonDocument<512> inDoc;   // Remove later if possible
 extern StaticJsonDocument<48> outDoc;
 
 

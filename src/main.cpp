@@ -13,7 +13,6 @@
 MS5837 pressSensor;
 TSYS01 tempSensor;
 
-
 byte pinM1 = 9;
 byte pinM2 = 10;
 byte pinM3 = 11;
@@ -28,6 +27,9 @@ int leak = 0;      // 0 = Dry , 1 = Leak
 float temp;
 float pres;
 bool leakStatus;
+// Testing variables
+String inputString = "";
+bool stringComplete = false;
 
 // "Second" initialization
 Servo motor_1;
@@ -40,18 +42,16 @@ Servo port_light;
 int RP_led_sp;
 int RP_mtr_dir;
 
-
-
 StaticJsonDocument<48> outDoc;
-
-char json[] = "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}";
-
 
 void setup() {
   // Initialize serial communication with Raspberry PI
-       
+  Serial.begin(9600); 
   
-  
+  // Reserve byte for testing variable 
+  inputString.reserve(200);
+
+
   // Initialize I2C bus
   Wire.begin();
   pressSensor.init();
@@ -76,16 +76,10 @@ void setup() {
   motor_1.writeMicroseconds(1500);    
   motor_2.writeMicroseconds(1500);
   motor_3.writeMicroseconds(1500);
-  // Serial.println("Initalizing motors");
+  // Serial.println("Initalizing motors");  // Will collide with JSON in python
   port_light.writeMicroseconds(1100);
   starboard_light.writeMicroseconds(1100);
   delay(7000);
-
-
-  pinMode(LED_BUILTIN, OUTPUT);
-  Serial.begin(38400); 
-
-  
 }
 
 void loop() {  
@@ -93,90 +87,16 @@ void loop() {
   tempSensor.read();
   pressSensor.read();
 
-  RP_led_sp = 120;  // Testing value, this is originally sent from RP
-  val = map(RP_led_sp, 0, 255, 1100, 1900);
-
   // Gets the sensor values and stores in local variable
   temp = tempSensor.temperature();
   pres = pressSensor.pressure();
   leakStatus = digitalRead(leakPin);
 
-  //sendToRaspberry(temp, pres, leakStatus);
-  // Can introduce if statement if only sending data when new readning
-  // if (Serial.available() > 0) { // Checks if number of bytes in input buffer is over 0
-  // }
   
-
-
-  
-
-  // If there is data to be received, deserialize the JSON into global variables
-  /*
-  if (Serial.available() > 0 or true) { 
-    receiveFromRaspberry();   
-  }
-  */
-
-  
-  
-  // sendToRaspberry(temp, pres, leakStatus);
-
-  //delay(20);
-  
+  // Serial with Raspberry Pi
   sendToRaspberry(temp, pres, leakStatus);
-
+  receiveFromRaspberry();
   
   
-  if ( Serial.available() ) {
-    //setMotorSpeeds(0);
-    receiveFromRaspberry();
-    /*
-    String  payload;
-    payload = Serial.readStringUntil( '\n' );
-    StaticJsonDocument<512> doc;
-    deserializeJson(doc, payload);
-    if (doc["operation"] == "sequence") {
-      setMotorSpeeds(0);
-      
-    }
-    else {
-      //setMotorSpeeds(0);
-    }
-    */
-  }
-  
-
-  //DeserializationError error = deserializeJson(doc, payload);
-  //if (error) {
-  //  Serial.println(error.c_str()); 
-  //  return;
-  
-  
-    
-    
-    
-    //
-  
-  
-  
-
-  /*
-  setMotorSpeeds(0);
-  Serial.println(motor_1.readMicroseconds());
-  delay(5000);
-  setMotorSpeeds(1);
-  Serial.println(motor_1.readMicroseconds());
-  delay(5000);
-  setMotorSpeeds(2);
-  delay(5000);
-  setMotorSpeeds(3);
-  delay(5000);
-  */
-  
-  
-  
-
-  port_light.writeMicroseconds(val);
-  starboard_light.writeMicroseconds(val);
-
 }
+
