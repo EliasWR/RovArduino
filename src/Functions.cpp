@@ -1,106 +1,138 @@
 #include <Arduino.h>
 #include "Functions.h"
 
+/**
+ * Function that controls the direction the ROV is moving in. Takes in 
+ * a zone that operator wants the ROV to be moving towards, and given that
+ * zone is not prohibited from the interlocking system, the function sends out
+ * the appropiate PWM signals to the motor drivers. In addition to linear 
+ * movements, the ROV can rotate both clockwise -and counterclockwise, these
+ * directions are never prohibited by the interlocing system.
+ * @param zone    Requsted propulsion in this zone direction
+ * @param z1lock  Propulsion in zone 1 direction prohibited variable
+ * @param z2lock  Propulsion in zone 2 direction prohibited variable
+ * @param z3lock  Propulsion in zone 3 direction prohibited variable
+ * @param z4lock  Propulsion in zone 4 direction prohibited variable
+ * @param z5lock  Propulsion in zone 5 direction prohibited variable
+ * @param z6lock  Propulsion in zone 6 direction prohibited variable
+ * @param z7lock  Propulsion in zone 7 direction prohibited variable
+ * @param z8lock  Propulsion in zone 8 direction prohibited variable
+ */
+
 void setMotorSpeeds(int zone, bool z1lock, bool z2lock, bool z3lock, 
 bool z4lock, bool z5lock, bool z6lock, bool z7lock, bool z8lock) {
-
   switch (zone) {
   case 1: // North
     if (z1lock) {
       fullStop();
     } else {
-      motor_1.writeMicroseconds(1600);    
-      motor_2.writeMicroseconds(1500);
-      motor_3.writeMicroseconds(1500);
+      controlMovement(1600, 1500, 1500);
     }
     break;
   case 2: // North-east
     if (z2lock) {
       fullStop();
     } else {
-      motor_1.writeMicroseconds(1500);
-      motor_2.writeMicroseconds(1600);
-      motor_3.writeMicroseconds(1500);
+      controlMovement(1500, 1600, 1500);
     }
     break;
   case 3: // East
     if (z3lock) {
       fullStop();
     } else {
-      motor_1.writeMicroseconds(1500);
-      motor_2.writeMicroseconds(1500);
-      motor_3.writeMicroseconds(1600);
+      controlMovement(1500, 1500, 1600);
     }
     break;
   case 4: // South-east
     if (z4lock) {
       fullStop();
     } else {
-      motor_1.writeMicroseconds(1600);
-      motor_2.writeMicroseconds(1500);
-      motor_3.writeMicroseconds(1500);
+      controlMovement(1600, 1500, 1500);
     }
     break;
   case 5: // South
     if (z5lock) {
       fullStop();
     } else {
-      motor_1.writeMicroseconds(1500);
-      motor_2.writeMicroseconds(1600);
-      motor_3.writeMicroseconds(1500);
+      controlMovement(1500, 1600, 1500);
     }
     break;
   case 6: // South-west
     if (z6lock) {
       fullStop();
     } else {
-      motor_1.writeMicroseconds(1500);
-      motor_2.writeMicroseconds(1500);
-      motor_3.writeMicroseconds(1600);
+      controlMovement(1500, 1500, 1600);
     }
     break;
   case 7: // West
     if (z7lock) {
       fullStop();
     } else {
-      motor_1.writeMicroseconds(1600);
-      motor_2.writeMicroseconds(1500);
-      motor_3.writeMicroseconds(1500);
+      controlMovement(1600, 1500, 1500);
     }
     break;
   case 8: // North-west
     if (z8lock) {
       fullStop();
     } else {
-      motor_1.writeMicroseconds(1500);
-      motor_2.writeMicroseconds(1600);
-      motor_3.writeMicroseconds(1500);
+      controlMovement(1500, 1600, 1500);
     }
     break;
   case 9: // Clock wise
-    motor_1.writeMicroseconds(1600);
-    motor_2.writeMicroseconds(1600);
-    motor_3.writeMicroseconds(1600);
+    controlMovement(1800, 1800, 1800);
     break;
   case 10:  // Counterclock wise
-    motor_1.writeMicroseconds(1400);
-    motor_2.writeMicroseconds(1400);
-    motor_3.writeMicroseconds(1400);
+    controlMovement(1400, 1400, 1400);
   case -1:  // Stand still 
     fullStop();
     break;
   }
 }
 
+/**
+ * Sets subsea lights power output, both lights have the exact same value. Takes
+ * in an integer that ranges from 0-255 and translates that to 0-100% light power.
+ * Sets light with PWM setting.
+ * @param pwr      Integer that ranges from 0-255 for 0-100% power
+ */
 void setLights(int pwr) {
   int val;
-  val = map(pwr, 0, 255, 1100, 1900); // 1900 draws 3A current
+  val = map(pwr, 0, 255, 1100, 1900); // 1900 draws 2.5A current
   port_light.writeMicroseconds(val);
   starboard_light.writeMicroseconds(val);
 }
 
+/**
+ * Function that sets all motors to neutral output. Zero propulsion in any
+ * direction for all three motors.
+ */
 void fullStop() {
   motor_1.write(1500);
   motor_2.write(1500);
   motor_3.write(1500);
+}
+
+/**
+ * Function that sets all the motor power and direction outputs. Takes in three
+ * arguments with PWM settings that controls each respective motor.
+ * @param m1pwr      PWM setting for motor 1
+ * @param m2pwr      PWM setting for motor 2
+ * @param m3pwr      PWM setting for motor 3
+ */
+void controlMovement(int m1pwr, int m2pwr, int m3pwr) {
+  motor_1.writeMicroseconds(m1pwr);
+  motor_2.writeMicroseconds(m2pwr);
+  motor_3.writeMicroseconds(m3pwr);
+}
+
+/**
+ * Function that rounds an input float number to a new float number with reduced
+ * number of decimals.
+ * @param value      input argument for number to reduce decimals
+ * @param prec       number of decimals to be returned
+ * @return           returns a float number rounded as specificed
+ */
+float roundNum(float value, unsigned char prec) {
+  float pow_10 = pow(10.0f, (float)prec);
+  return round(value * pow_10) / pow_10;
 }

@@ -13,3 +13,5 @@ bool z4lock, bool z5lock, bool z6lock, bool z7lock, bool z8lock);
 
 void setLights(int pwr);
 void fullStop();
+void controlMovement(int m1pwr, int m2pwr, int m3pwr);
+float roundNum(float value, unsigned char prec);

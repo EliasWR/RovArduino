@@ -1,62 +1,59 @@
-#include <Arduino.h>  // Including the arduino functions (loop, setup)
+/**********************************************************************
+ * PROGRAM THAT CONTROLS ARDUINO FOR A REMOTE OPERATING VEHICLE (ROV)
+ * THAT IS DESIGNED FOR AQUACULTURE INSPECTION. THE PROGRAM CONTROLS 
+ * MOVEMENT WITH THREE THRUSTERS AND VISION WITH TWO SUBSEA LIGHTS. 
+ * ADDITIONALLY THE PROGRAM READS TEMPERATURE AND PRESSURE FROM THE
+ * ENVIRONMENT THROUGH I2C COMMUNICATION. THE ARDUINO COMMUNICATES
+ * WITH RASPBERRY PI THROUGH SERIAL COMMUNICATION.
+ *********************************************************************/
+
+#include <Arduino.h>  
 #include <Servo.h>
 #include <Wire.h>
 #include "MS5837.h"
 #include "TSYS01.h"
 #include <ArduinoJson.h>
-
 #include "Communication.h"
 #include "Functions.h"
 
 
-// Initialize objects
+// Initialize I2C OBJECTS
 MS5837 pressSensor;
 TSYS01 tempSensor;
 
-byte pinM1 = 9;
-byte pinM2 = 10;
-byte pinM3 = 11;
-byte l1 = 5;
-byte l2 = 6;
-
-//// Variable declaration
-// Variables used locally in Arduino
-int val;
-int leakPin = 3;   // Leak Signal Pin //pin must be 3 not 1 or 2
-int leak = 0;      // 0 = Dry , 1 = Leak  
-float temp;
-float pres;
-bool leakStatus;
-// Testing variables
-String inputString = "";
-bool stringComplete = false;
-
-// "Second" initialization
+// Initialize actuator objects for motors and lights
 Servo motor_1;
 Servo motor_2;
 Servo motor_3;
 Servo starboard_light;
 Servo port_light;
 
-// Variables set by raspberry pi communication
-int RP_led_sp;
-int RP_mtr_dir;
+// Input and output pins are selected based on PWM capabilities
+byte pinM1 = 9;
+byte pinM2 = 10;
+byte pinM3 = 11;
+byte l1 = 5;
+byte l2 = 6;
+
+// Local variables used for logic and communication
+int val;
+int leakPin = 3;   // Leak Signal Pin //pin must be 3 not 1 or 2
+int leak = 0;      // 0 = Dry , 1 = Leak  
+float temp;
+int pres;
+bool leakStatus;
+int missedPackets;
 
 StaticJsonDocument<48> outDoc;
 
 void setup() {
   // Initialize serial communication with Raspberry PI
   Serial.begin(9600); 
-  
-  // Reserve byte for testing variable 
-  inputString.reserve(200);
-
 
   // Initialize I2C bus
   Wire.begin();
   pressSensor.init();
   tempSensor.init();
-
 
   // Declaring properties to pressure sensor object
   pressSensor.setModel(MS5837::MS5837_30BA);
@@ -71,14 +68,9 @@ void setup() {
   pinMode(leakPin, INPUT);
   
   // Motors need to receive zero thrust signal for some time
-  // before receiving additional commands
-  // Lights are set to off
-  motor_1.writeMicroseconds(1500);    
-  motor_2.writeMicroseconds(1500);
-  motor_3.writeMicroseconds(1500);
-  // Serial.println("Initalizing motors");  // Will collide with JSON in python
-  port_light.writeMicroseconds(1100);
-  starboard_light.writeMicroseconds(1100);
+  // before receiving additional commands 
+  fullStop();
+  setLights(0); // Lights are set to off for inital state
   delay(7000);
 }
 
@@ -92,11 +84,29 @@ void loop() {
   pres = pressSensor.pressure();
   leakStatus = digitalRead(leakPin);
 
+  // Using this communication logic, Python script is running 4-5 times
+  // before the Arduino manages to handles packets
+  // But when Arduino does: handles 2 or 3 per cycle
+  sendToRaspberry(temp, pres, leakStatus);
+
+  if (Serial.available()) {
+    receiveFromRaspberry();
+    missedPackets = 0;
+  } else {
+    missedPackets++;
+    if (missedPackets > 3) {
+      fullStop();
+    }
+  }
   
-  // Serial with Raspberry Pi
+
+  /* 
+  // This solution for serial communication sends less packets, and is 
+  // a bit more reliable, however does not notice when serial communication
+  // is offline.
   sendToRaspberry(temp, pres, leakStatus);
   receiveFromRaspberry();
-  
+  */
   
 }
 
