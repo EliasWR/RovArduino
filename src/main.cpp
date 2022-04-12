@@ -1,6 +1,6 @@
 /**********************************************************************
- * PROGRAM THAT CONTROLS ARDUINO FOR A REMOTE OPERATING VEHICLE (ROV)
- * THAT IS DESIGNED FOR AQUACULTURE INSPECTION. THE PROGRAM CONTROLS 
+ * PROGRAM THAT CONTROLS AN ARDUINO FOR A REMOTE OPERATING VEHICLE (ROV).
+ * ROV IS DESIGNED FOR AQUACULTURE INSPECTION. THE PROGRAM CONTROLS 
  * MOVEMENT WITH THREE THRUSTERS AND VISION WITH TWO SUBSEA LIGHTS. 
  * ADDITIONALLY THE PROGRAM READS TEMPERATURE AND PRESSURE FROM THE
  * ENVIRONMENT THROUGH I2C COMMUNICATION. THE ARDUINO COMMUNICATES
@@ -40,9 +40,10 @@ int val;
 int leakPin = 3;   // Leak Signal Pin //pin must be 3 not 1 or 2
 int leak = 0;      // 0 = Dry , 1 = Leak  
 float temp;
-int pres;
+float depth;
 bool leakStatus;
 int missedPackets;
+int i;
 
 StaticJsonDocument<48> outDoc;
 
@@ -81,13 +82,16 @@ void loop() {
 
   // Gets the sensor values and stores in local variable
   temp = tempSensor.temperature();
-  pres = pressSensor.pressure();
+  depth = pressSensor.depth();
   leakStatus = digitalRead(leakPin);
 
-  // Using this communication logic, Python script is running 4-5 times
-  // before the Arduino manages to handles packets
-  // But when Arduino does: handles 2 or 3 per cycle
-  sendToRaspberry(temp, pres, leakStatus);
+  // Every 30 program iteration the Arduino sends data to Raspberry
+  if (i > 30) {
+    sendToRaspberry(temp, depth, leakStatus);
+    i = 0;
+  }
+
+  i++;
 
   if (Serial.available()) {
     receiveFromRaspberry();

@@ -7,13 +7,13 @@
  * Function that handles communication Raspberry Pi. Takes in three arguments
  * with predefined types, and structures the data to JSON format. The JSON strings
  * are serialized and sent to Raspberry Pi.
- * @param arg1      gives the size of the payload
- * @param arg2
- * @param arg3
+ * @param arg1  Environment temperature value
+ * @param arg2  Environment pressure value
+ * @param arg3  Value that indicates if there is leak inside ROV 
  */
-void sendToRaspberry(float arg1, int arg2, bool arg3) {
+void sendToRaspberry(float arg1, float arg2, bool arg3) {
   outDoc["Temp"] = roundNum(arg1, 1);
-  outDoc["Pressure"] = arg2;
+  outDoc["Depth"] = arg2;
   outDoc["Leak"] = arg3;
   
   // Format the data to serial
