@@ -26,63 +26,63 @@ bool z4lock, bool z5lock, bool z6lock, bool z7lock, bool z8lock) {
     if (z1lock) {
       fullStop();
     } else {
-      controlMovement(1550, 1500, 1500);
+      controlMovement(1600, 1600, 1500);
     }
     break;
   case 2: // Forward-right
     if (z2lock) {
       fullStop();
     } else {
-      controlMovement(1500, 1600, 1500);
+      controlMovement(1600, 1500, 1600);
     }
     break;
   case 3: // Right
     if (z3lock) {
       fullStop();
     } else {
-      controlMovement(1500, 1500, 1600);
+      controlMovement(1550, 1450, 1600);
     }
     break;
   case 4: // Reverse-right
     if (z4lock) {
       fullStop();
     } else {
-      controlMovement(1600, 1500, 1500);
+      controlMovement(1500, 1400, 1600);
     }
     break;
   case 5: // Reverse
     if (z5lock) {
       fullStop();
     } else {
-      controlMovement(1500, 1600, 1500);
+      controlMovement(1400, 1400, 1500);
     }
     break;
   case 6: // Reverse-left
     if (z6lock) {
       fullStop();
     } else {
-      controlMovement(1500, 1500, 1600);
+      controlMovement(1400, 1500, 1400);
     }
     break;
   case 7: // Left
     if (z7lock) {
       fullStop();
     } else {
-      controlMovement(1600, 1500, 1500);
+      controlMovement(1450, 1550, 1400);
     }
     break;
   case 8: // Forward-left
     if (z8lock) {
       fullStop();
     } else {
-      controlMovement(1500, 1600, 1500);
+      controlMovement(1500, 1600, 1400);
     }
     break;
   case 9: // Clock-wise
-    controlMovement(1800, 1800, 1800);
+    controlMovement(1550, 1450, 1450);
     break;
   case 10:  // Counterclock-wise
-    controlMovement(1400, 1400, 1400);
+    controlMovement(1450, 1550, 1550);
   case -1:  // Stand still 
     fullStop();
     break;

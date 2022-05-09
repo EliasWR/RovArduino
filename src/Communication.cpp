@@ -43,6 +43,7 @@ void receiveFromRaspberry() {
   // If new values where communicated from Raspberry, update outputs
   setLights(doc["light"]);
 
+  runZone = doc["runZone"];
   z1lock = doc["locked"][0];
   z2lock = doc["locked"][1];
   z3lock = doc["locked"][2];
@@ -51,8 +52,6 @@ void receiveFromRaspberry() {
   z6lock = doc["locked"][5];
   z7lock = doc["locked"][6];
   z8lock = doc["locked"][7];
-  
-  setMotorSpeeds(doc["runZone"], z1lock, z2lock, z3lock, 
-  z4lock, z5lock, z6lock, z7lock, z8lock);
+
 }
 

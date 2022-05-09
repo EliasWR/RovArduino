@@ -8,6 +8,16 @@ extern Servo motor_3;
 extern Servo starboard_light;
 extern Servo port_light;
 
+extern int runZone;
+extern bool z1lock;
+extern bool z2lock;
+extern bool z3lock;
+extern bool z4lock;
+extern bool z5lock;
+extern bool z6lock;
+extern bool z7lock;
+extern bool z8lock;
+
 void setMotorSpeeds(int zone, bool z1lock, bool z2lock, bool z3lock, 
 bool z4lock, bool z5lock, bool z6lock, bool z7lock, bool z8lock);
 
