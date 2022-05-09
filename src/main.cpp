@@ -28,6 +28,17 @@ Servo motor_3;
 Servo starboard_light;
 Servo port_light;
 
+// Initializes run commands from the globals
+int runZone;
+bool z1lock;
+bool z2lock;
+bool z3lock;
+bool z4lock;
+bool z5lock;
+bool z6lock;
+bool z7lock;
+bool z8lock;
+
 // Input and output pins are selected based on PWM capabilities
 byte pinM1 = 9;
 byte pinM2 = 10;
@@ -89,8 +100,7 @@ void loop() {
   if (i > 30) {
     sendToRaspberry(temp, depth, leakStatus);
     i = 0;
-  }
-
+  } 
   i++;
 
   if (Serial.available()) {
@@ -103,14 +113,9 @@ void loop() {
     }
   }
   
-
-  /* 
-  // This solution for serial communication sends less packets, and is 
-  // a bit more reliable, however does not notice when serial communication
-  // is offline.
-  sendToRaspberry(temp, pres, leakStatus);
-  receiveFromRaspberry();
-  */
-  
+  // Sets selected motor speeds and direction on GUI commands
+  // and interlocked zones
+  setMotorSpeeds(runZone, z1lock, z2lock, z3lock, 
+  z4lock, z5lock, z6lock, z7lock, z8lock);
 }
 
