@@ -29,7 +29,7 @@ Servo starboard_light;
 Servo port_light;
 
 // Initializes run commands from the globals
-int runZone;
+int runZone = -1;
 bool z1lock;
 bool z2lock;
 bool z3lock;

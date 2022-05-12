@@ -22,67 +22,71 @@
 void setMotorSpeeds(int zone, bool z1lock, bool z2lock, bool z3lock, 
 bool z4lock, bool z5lock, bool z6lock, bool z7lock, bool z8lock) {
   switch (zone) {
-  case 1: // Forward
+  case 0: // Forward
     if (z1lock) {
       fullStop();
     } else {
-      controlMovement(1600, 1600, 1500);
+      controlMovement(1550, 1550, 1500);
+      //controlMovement(1550, 1500, 1500);
     }
     break;
-  case 2: // Forward-right
+  case 1: // Forward-right
     if (z2lock) {
       fullStop();
     } else {
-      controlMovement(1600, 1500, 1600);
+      controlMovement(1550, 1500, 1550);
+      //controlMovement(1500, 1550, 1500);
     }
     break;
-  case 3: // Right
+  case 2: // Right
     if (z3lock) {
       fullStop();
     } else {
-      controlMovement(1550, 1450, 1600);
+      controlMovement(1530, 1470, 1550);
+      //controlMovement(1500, 1500, 1550);
     }
     break;
-  case 4: // Reverse-right
+  case 3: // Reverse-right
     if (z4lock) {
       fullStop();
     } else {
-      controlMovement(1500, 1400, 1600);
+      controlMovement(1500, 1450, 1550);
     }
     break;
-  case 5: // Reverse
+  case 4: // Reverse
     if (z5lock) {
       fullStop();
     } else {
-      controlMovement(1400, 1400, 1500);
+      controlMovement(1450, 1450, 1500);
     }
     break;
-  case 6: // Reverse-left
+  case 5: // Reverse-left
     if (z6lock) {
       fullStop();
     } else {
-      controlMovement(1400, 1500, 1400);
+      controlMovement(1450, 1500, 1450);
     }
     break;
-  case 7: // Left
+  case 6: // Left
     if (z7lock) {
       fullStop();
     } else {
-      controlMovement(1450, 1550, 1400);
+      controlMovement(1470, 1530, 1450);
     }
     break;
-  case 8: // Forward-left
+  case 7: // Forward-left
     if (z8lock) {
       fullStop();
     } else {
-      controlMovement(1500, 1600, 1400);
+      controlMovement(1500, 1550, 1450);
     }
     break;
-  case 9: // Clock-wise
-    controlMovement(1550, 1450, 1450);
+  case 8: // Counterclock-wise
+    controlMovement(1470, 1530, 1530);
     break;
-  case 10:  // Counterclock-wise
-    controlMovement(1450, 1550, 1550);
+  case 9:  // Clock-wise
+    controlMovement(1530, 1470, 1470);
+    break;
   case -1:  // Stand still 
     fullStop();
     break;
@@ -97,7 +101,7 @@ bool z4lock, bool z5lock, bool z6lock, bool z7lock, bool z8lock) {
  */
 void setLights(int pwr) {
   int val;
-  val = map(pwr, 0, 255, 1100, 1900); // 1900 draws 2.5A current
+  val = map(pwr, 0, 255, 1100, 1500); // 1900 draws 2.5A current
   port_light.writeMicroseconds(val);
   starboard_light.writeMicroseconds(val);
 }
