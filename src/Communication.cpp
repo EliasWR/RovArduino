@@ -1,3 +1,7 @@
+/**********************************************************************
+ * SUBPROGRAM OF THE ARDUINO UNO CODE FOR COMMUNICATION BETWEEN THE 
+ * ARDUINO AND THE RASPBERRY PI
+ *********************************************************************/
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include "Communication.h"

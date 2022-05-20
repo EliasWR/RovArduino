@@ -29,7 +29,7 @@ Servo starboard_light;
 Servo port_light;
 
 // Initializes run commands from the globals
-int runZone = -1;
+int runZone = -1;   // Initial run state is set to offf
 bool z1lock;
 bool z2lock;
 bool z3lock;
@@ -56,13 +56,14 @@ bool leakStatus;
 int missedPackets;
 int i;
 
+// Json document used to hold and format data to be sent to RPi
 StaticJsonDocument<48> outDoc;
 
 void setup() {
-  // Initialize serial communication with Raspberry PI
+  // Initialize serial communication with RPi
   Serial.begin(9600); 
 
-  // Initialize I2C bus
+  // Initialize I2C bus sensors
   Wire.begin();
   pressSensor.init();
   tempSensor.init();
@@ -72,26 +73,28 @@ void setup() {
   pressSensor.setFluidDensity(997);
 
   // Declaring PWM pins for motors and lights
-  port_light.attach(l1);  // switched from 5
+  port_light.attach(l1);  
   starboard_light.attach(l2);
   motor_1.attach(pinM1);
-  motor_2.attach(pinM2);  // switched from 10
+  motor_2.attach(pinM2);  
   motor_3.attach(pinM3);
+
+  // Declaring leak sensor as input
   pinMode(leakPin, INPUT);
   
-  // Motors need to receive zero thrust signal for some time
-  // before receiving additional commands 
+  // Motors need to receive zero thrust signal for 7
+  // seconds to properly initialize
   fullStop();
-  setLights(0); // Lights are set to off for inital state
+  setLights(0); // Lights are set to off for inital operation
   delay(7000);
 }
 
 void loop() {  
-  // Read sensor values
+  // Read I2C sensor values
   tempSensor.read();
   pressSensor.read();
 
-  // Gets the sensor values and stores in local variable
+  // Gets the required sensor values and place in variables
   temp = tempSensor.temperature();
   depth = pressSensor.depth();
   leakStatus = digitalRead(leakPin);
@@ -103,18 +106,19 @@ void loop() {
   } 
   i++;
 
+  // If data is found within serial buffer, handle data
   if (Serial.available()) {
     receiveFromRaspberry();
     missedPackets = 0;
-  } else {
+  } else {  // Otherwise connection is broken and motors are stopped
     missedPackets++;
     if (missedPackets > 3) {
       fullStop();
     }
   }
   
-  // Sets selected motor speeds and direction on GUI commands
-  // and interlocked zones
+  // Control motor speed and directions based on commanded zone
+  // and information from collision avoidance system
   setMotorSpeeds(runZone, z1lock, z2lock, z3lock, 
   z4lock, z5lock, z6lock, z7lock, z8lock);
 }
