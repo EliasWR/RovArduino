@@ -1,3 +1,7 @@
+/**********************************************************************
+ * SUBPROGRAM OF THE ARDUINO UNO CODE FOR CONTROLLING ROV. FILE CONTAINS
+ * THE FUNCTIONS NEEDED TO CONTROL THE MOTORS AND LIGHTS.
+ *********************************************************************/
 #include <Arduino.h>
 #include "Functions.h"
 
@@ -27,7 +31,6 @@ bool z4lock, bool z5lock, bool z6lock, bool z7lock, bool z8lock) {
       fullStop();
     } else {
       controlMovement(1550, 1550, 1500);
-      //controlMovement(1550, 1500, 1500);
     }
     break;
   case 1: // Forward-right
@@ -35,7 +38,6 @@ bool z4lock, bool z5lock, bool z6lock, bool z7lock, bool z8lock) {
       fullStop();
     } else {
       controlMovement(1550, 1500, 1550);
-      //controlMovement(1500, 1550, 1500);
     }
     break;
   case 2: // Right
@@ -43,7 +45,6 @@ bool z4lock, bool z5lock, bool z6lock, bool z7lock, bool z8lock) {
       fullStop();
     } else {
       controlMovement(1530, 1470, 1550);
-      //controlMovement(1500, 1500, 1550);
     }
     break;
   case 3: // Reverse-right
